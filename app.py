@@ -37,7 +37,7 @@ if not TOKEN:
 
 if not OWNER_ID_STR or not ADMIN_ID_STR:
     logger.error("OWNER_ID or ADMIN_ID not found in environment variables!")
-    raise ValueError("OWNER_ID and ADMIN_ID are required. Please set them in .env file.")
+    raise ValueError("OWNER_ID and ADMIN_ID are required. Please set it in .env file.")
 
 try:
     OWNER_ID = int(OWNER_ID_STR)
@@ -48,7 +48,7 @@ except ValueError:
 
 YOUR_USERNAME = '@dj_rohan_official'
 UPDATE_CHANNEL = 'https://t.me/ROHAN0DJ'
-YOUTUBE_CHANNEL 'https://whatsapp.com/channel/0029Vb8psS872WToTkVa550i'
+YOUTUBE_CHANNEL = 'https://whatsapp.com/channel/0029Vb8psS872WToTkVa550i'
 CHANNEL_USERNAME = '@' + UPDATE_CHANNEL.rstrip('/').split('/')[-1]
 
 BASE_DIR = Path(__file__).parent.absolute()
@@ -190,7 +190,6 @@ migrate_db()
 load_data()
 
 # ── AUTO DEPENDENCY INSTALLER ────────────────────────
-# Import name → actual pip package name (jab dono alag hote hain)
 IMPORT_TO_PIP = {
     'telebot': 'pyTelegramBotAPI',
     'telegram': 'python-telegram-bot',
@@ -213,7 +212,6 @@ IMPORT_TO_PIP = {
     'serial': 'pyserial',
 }
 
-# Python built-in modules — inhe kabhi install karne ki koshish nahi karni
 STDLIB_MODULES = set(sys.stdlib_module_names) if hasattr(sys, 'stdlib_module_names') else {
     'os', 'sys', 'time', 'json', 're', 'math', 'random', 'datetime', 'collections',
     'itertools', 'functools', 'subprocess', 'threading', 'asyncio', 'socket', 'io',
@@ -223,7 +221,6 @@ STDLIB_MODULES = set(sys.stdlib_module_names) if hasattr(sys, 'stdlib_module_nam
 }
 
 def extract_imports(file_path):
-    """File ke andar se saare top-level 'import X' / 'from X import Y' nikalta hai"""
     modules = set()
     try:
         content = Path(file_path).read_text(errors='ignore')
@@ -235,8 +232,6 @@ def extract_imports(file_path):
     return modules
 
 def install_missing_dependencies(file_path, timeout=90):
-    """Script mein use ho rahi libraries check karke jo missing hain unhe pip se install karta hai.
-    Returns: (installed_list, failed_list)"""
     modules = extract_imports(file_path)
     installed, failed = [], []
 
@@ -244,7 +239,7 @@ def install_missing_dependencies(file_path, timeout=90):
         if mod in STDLIB_MODULES or mod in ('__future__',):
             continue
         if importlib.util.find_spec(mod) is not None:
-            continue  # already installed
+            continue
 
         pip_name = IMPORT_TO_PIP.get(mod, mod)
         try:
@@ -263,7 +258,7 @@ def install_missing_dependencies(file_path, timeout=90):
     return installed, failed
 
 def get_user_file_limit(user_id):
-    return OWNER_LIMIT  # Sabke liye unlimited — koi upload limit nahi
+    return OWNER_LIMIT
 
 def format_limit(limit):
     return "Unlimited ♾️" if limit == float('inf') else f"{limit} files"
@@ -1209,8 +1204,6 @@ Please wait...
             if file_ext in ['.py', '.js']:
                 just_name = file_path.name
                 
-                # Agar file kisi subfolder mein extract hui hai, use root user_folder mein move karo
-                # taaki baad mein run karte waqt file mil jaye (registration sirf naam track karta hai)
                 extracted_full_path = user_folder / extracted_file
                 target_path = user_folder / just_name
                 if extracted_full_path.exists() and extracted_full_path != target_path:
@@ -1218,7 +1211,6 @@ Please wait...
                         extracted_full_path.rename(target_path)
                         just_name = target_path.name
                     else:
-                        # Naam already exist karta hai to unique bana do (overwrite se bachne ke liye)
                         stem, suf = target_path.stem, target_path.suffix
                         counter = 1
                         new_target = user_folder / f"{stem}_{counter}{suf}"
@@ -2205,7 +2197,7 @@ _BOT_USERNAME = None
 
 def _auth_ok(request):
     if not ADMIN_PASSWORD:
-        return True  # password set nahi hai to panel open rahega
+        return True
     h = request.headers.get('Authorization', '')
     if not h.startswith('Basic '):
         return False
@@ -2404,7 +2396,7 @@ input,textarea{background:#0b0f17;color:#e6edf3;border:1px solid #30363d;border-
 <h2 id="ttl"></h2><div class="sub" id="st"></div><div id="view"></div></div><div id="toast"></div>
 <script>
 const $=id=>document.getElementById(id);let D=null,P='over',Q='';
-const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;T'[c]));
 function toast(m,ok=true){const t=$('toast');t.textContent=m;t.style.background=ok?'#238636':'#da3633';t.style.display='block';setTimeout(()=>t.style.display='none',2600)}
 async function act(b){try{const r=await fetch('/admin/action',{method:'POST',headers:{'Content-Type':'application/json','X-Panel':'1'},body:JSON.stringify(b)});const j=await r.json();toast(j.msg||'Done',j.ok);load()}catch(e){toast('Error',false)}}
 document.querySelectorAll('button.nav').forEach(b=>b.onclick=()=>{P=b.dataset.p;document.querySelectorAll('button.nav').forEach(x=>x.classList.toggle('on',x==b));$('side').classList.remove('open');render()});
@@ -2493,7 +2485,6 @@ async def landing_page(request):
     return web.Response(text=page, content_type='text/html')
 
 async def keep_alive():
-    """Render free service ko sone se bachane ke liye khud ko ping karta hai"""
     url = os.getenv('RENDER_EXTERNAL_URL')
     if not url:
         return
@@ -2505,7 +2496,7 @@ async def keep_alive():
                     logger.info(f"Keep-alive ping: {r.status}")
         except Exception as e:
             logger.warning(f"Keep-alive failed: {e}")
-        await asyncio.sleep(600)  # har 10 minute
+        await asyncio.sleep(600)
 
 async def web_server():
     app = web.Application()
