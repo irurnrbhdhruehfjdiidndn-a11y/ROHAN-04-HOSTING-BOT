@@ -2396,7 +2396,7 @@ input,textarea{background:#0b0f17;color:#e6edf3;border:1px solid #30363d;border-
 <h2 id="ttl"></h2><div class="sub" id="st"></div><div id="view"></div></div><div id="toast"></div>
 <script>
 const $=id=>document.getElementById(id);let D=null,P='over',Q='';
-const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;T'[c]));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function toast(m,ok=true){const t=$('toast');t.textContent=m;t.style.background=ok?'#238636':'#da3633';t.style.display='block';setTimeout(()=>t.style.display='none',2600)}
 async function act(b){try{const r=await fetch('/admin/action',{method:'POST',headers:{'Content-Type':'application/json','X-Panel':'1'},body:JSON.stringify(b)});const j=await r.json();toast(j.msg||'Done',j.ok);load()}catch(e){toast('Error',false)}}
 document.querySelectorAll('button.nav').forEach(b=>b.onclick=()=>{P=b.dataset.p;document.querySelectorAll('button.nav').forEach(x=>x.classList.toggle('on',x==b));$('side').classList.remove('open');render()});
@@ -2506,6 +2506,7 @@ async def web_server():
     
     app.router.add_get('/', landing_page)
     app.router.add_get('/health', health)
+    app.router.add_get('/healthz', health)  # Render health check fix added
     app.router.add_get('/admin', admin_page)
     app.router.add_get('/admin/api', panel_api)
     app.router.add_post('/admin/action', panel_action)
